@@ -30,7 +30,9 @@ export function handleSocketConnection(io: Server, socket: Socket) {
     if (roomId) {
       const players = roomManager.getRoomPlayers(roomId);
       // io.to(roomId).emit("room-update", players);
-      SocketManager.getInstance().emitToRoom(roomId, "room-update", players);
+      SocketManager.getInstance().emitToRoom(roomId, "room-update", {
+        players,
+      });
     }
   });
 }
