@@ -39,6 +39,18 @@ class GameManager {
     game.addPlayer(player);
     return game;
   }
+  public removePlayerFromGame(roomId: string, playerId: string): boolean {
+    const game = this.games.get(roomId);
+    if (!game) {
+      console.error(`Game with roomId ${roomId} does not exist.`);
+      return false;
+    }
+    const success = game.removePlayer(playerId);
+    if (!success) {
+      console.error(`Player with id ${playerId} could not be removed.`);
+    }
+    return success;
+  }
 
   public getGame(roomId: string): Game | undefined {
     return this.games.get(roomId);

@@ -41,6 +41,7 @@ class RoomManager {
       this.clearRoom(roomId);
       return null;
     }
+    GameManager.getInstance().removePlayerFromGame(roomId, socketId);
 
     this.rooms[roomId] = players.filter((p) => p.id !== socketId);
     delete this.playerRoomMap[socketId];

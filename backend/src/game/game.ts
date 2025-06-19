@@ -1,5 +1,7 @@
 // src/game/core/Game.ts
 import { Player } from "./roomManager";
+import DrawingState from "./states/drawingState";
+import FinishedState from "./states/finishedState";
 import GameState from "./states/gameState";
 import WaitingState from "./states/waitingState";
 
@@ -23,6 +25,9 @@ class Game {
     this.state = state;
     this.state.onEnter(this);
   }
+  public getState(): GameState {
+    return this.state;
+  }
 
   public addPlayer(player: Player): boolean {
     if (
@@ -32,6 +37,26 @@ class Game {
     }
 
     this.players.push(player);
+    return true;
+  }
+  public removePlayer(playerId: string): boolean {
+    const playerIndex = this.players.findIndex(
+      (existingPlayer) => existingPlayer.id === playerId
+    );
+
+    if (playerIndex === -1) {
+      return false;
+    }
+
+    this.players.splice(playerIndex, 1);
+
+    if (this.players.length <= 1) this.setState(new FinishedState());
+
+    if (this.drawerId === playerId) {
+      if (this.timer) clearTimeout(this.timer);
+      this.setState(new DrawingState());
+    }
+
     return true;
   }
 

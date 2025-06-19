@@ -54,9 +54,10 @@ function addPlayerToGame(
 ): Game {
   const game = GameManager.getInstance().addPlayerToGame(roomId, player);
   if (players.length >= 2) {
-    game.setState(new DrawingState());
+    if (!(game.getState() instanceof DrawingState)) {
+      game.setState(new DrawingState());
+    }
   }
   // SocketManager.getInstance().emitToRoom(roomId, "game", game);
-  console.log(game);
   return game;
 }
