@@ -21,6 +21,10 @@ class DrawingState extends GameState {
     console.log(
       `[Game:${game.roomId}] New word started ${word}. Drawer: ${game.drawerId}`
     );
+    SocketManager.getInstance().emitToRoom(game.roomId, "word-update", {
+      word: word,
+      drawer: game.drawerId,
+    });
 
     game.timer = setTimeout(() => {
       game.setState(new DrawingState()); // move to next word
