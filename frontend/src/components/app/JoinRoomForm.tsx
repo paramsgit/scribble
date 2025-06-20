@@ -30,7 +30,7 @@ const JoinRoomForm = ({ setRoomData }) => {
     if (socket) {
       socket.emit("join-room", {
         roomId: null,
-        name: `Param${Math.random() * 100}`,
+        name: `Param${(Math.random() * 100).toFixed(2)}`,
       });
     }
   }

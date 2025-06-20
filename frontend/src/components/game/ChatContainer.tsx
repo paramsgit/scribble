@@ -7,10 +7,10 @@ interface Message {
   message: string;
   isCorrect?: boolean;
   timeStamp?: Date;
-  senderName?: string;
+  player?: string;
 }
 
-const ChatContainer = () => {
+const ChatContainer = ({ getPlayerDetails }) => {
   const socket = SocketManager.getInstance();
   const [messages, setMessages] = React.useState<Message[]>([
     {
@@ -20,26 +20,27 @@ const ChatContainer = () => {
       timeStamp: new Date(),
     },
   ]);
+
   useEffect(() => {
     const messageHandler = (data: Message) => {
       console.log("got a message:", data);
       handleNewMessage(data);
     };
-
     socket.on("message", messageHandler);
-
     return () => {
       socket.off("message", messageHandler);
     };
   }, []);
+
   const handleNewMessage = (data: Message) => {
+    const player = getPlayerDetails(data.player);
     setMessages((mess) => {
       const newMessage: Message = {
         id: mess.length + 1,
         message: data.message,
         isCorrect: data?.isCorrect ?? false,
         timeStamp: new Date(),
-        senderName: "Rohan",
+        player: player?.name ?? "Player",
       };
       return [...mess, newMessage];
     });
@@ -69,11 +70,7 @@ const ChatComponent = ({ socket, messages }) => {
       {/* Message List */}
       <div className="flex-1 overflow-y-auto py-2 ">
         {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            message={message}
-            isSent={message.isSent}
-          />
+          <ChatMessage key={message.id} message={message} />
         ))}
       </div>
 
@@ -99,16 +96,18 @@ const ChatComponent = ({ socket, messages }) => {
   );
 };
 
-const ChatMessage = ({ message, isSent }) => {
+const ChatMessage = ({ message }) => {
   return (
     <div className={`flex`}>
       <div
         className={cn(
-          `w-full py-2 px-2 text-gray-200 `,
-          message.id % 2 && "bg-zinc-800"
+          `w-full flex gap-2 py-2 px-2 text-gray-200 `,
+          message.id % 2 && "bg-zinc-800",
+          message.isCorrect && "font-bold text-green-500"
         )}
       >
-        <p>{message.message}</p>
+        <span>{message.player}: </span>
+        <span>{message.message}</span>
       </div>
     </div>
   );

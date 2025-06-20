@@ -9,12 +9,21 @@ const Game = ({ roomData }) => {
     console.log(roomData);
   }, [roomData]);
 
+  const getPlayerDetails = (socketId: string) => {
+    const players = roomData?.players;
+    if (!players) {
+      return null;
+    }
+    const player = players?.find((player) => player.id === socketId);
+    return player;
+  };
+
   return (
     <PlayersVisibilityProvider>
       <GameLayout
         playersContent={<Players data={roomData?.players} />}
         groundContent={<div>main</div>}
-        messagesContent={<ChatContainer />}
+        messagesContent={<ChatContainer getPlayerDetails={getPlayerDetails} />}
         playersClassName=""
         groundClassName="p-8"
         messagesClassName="p-4"
