@@ -66,7 +66,7 @@ const ChatComponent = ({ socket, messages }) => {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-md mx-auto ">
+    <div className="flex flex-col h-full ">
       {/* Message List */}
       <div className="flex-1 overflow-y-auto py-2 ">
         {messages.map((message) => (

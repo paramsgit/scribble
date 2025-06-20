@@ -38,7 +38,7 @@ class DrawingState extends GameState {
   onGuess(game: Game, playerId: string, guess: string): boolean {
     if (game.guessedPlayerIds.has(playerId)) return false;
     const currentWord = game.wordList[game.currentWordIndex];
-    if (guess.toLowerCase() === currentWord.toLowerCase()) {
+    if (guess?.toLowerCase() === currentWord?.toLowerCase()) {
       console.log(`[Game:${game.roomId}] ${playerId} guessed correctly!`);
       game.guessedPlayerIds.add(playerId);
 
