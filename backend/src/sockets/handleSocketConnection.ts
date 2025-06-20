@@ -24,12 +24,23 @@ export function handleSocketConnection(io: Server, socket: Socket) {
     addPlayerToGame(roomId, { id: socket.id, name }, players);
   });
 
+  socket.on("guess", ({ message }) => {
+    console.log("word: ", socket.id, message);
+    const roomId = roomManager.removePlayer(socket.id);
+    if (roomId) {
+      const players = roomManager.getRoomPlayers(roomId);
+      SocketManager.getInstance().emitToRoom(roomId, "message", {
+        message,
+        player: socket.id,
+      });
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("Disconnected: ", socket.id);
     const roomId = roomManager.removePlayer(socket.id);
     if (roomId) {
       const players = roomManager.getRoomPlayers(roomId);
-      // io.to(roomId).emit("room-update", players);
       SocketManager.getInstance().emitToRoom(roomId, "room-update", {
         players,
       });
