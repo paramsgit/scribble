@@ -21,7 +21,9 @@ class FinishedState extends GameState {
   }
 
   onTick(game: Game): void {}
-  onGuess(game: Game, playerId: string, guess: string): void {}
+  onGuess(game: Game, playerId: string, guess: string): boolean {
+    return false;
+  }
 }
 
 export default FinishedState;

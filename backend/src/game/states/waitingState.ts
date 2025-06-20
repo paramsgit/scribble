@@ -15,8 +15,9 @@ class WaitingState extends GameState {
     // No-op while waiting
   }
 
-  onGuess(game: Game, playerId: string, guess: string): void {
+  onGuess(game: Game, playerId: string, guess: string): boolean {
     // No-op while waiting
+    return false;
   }
 }
 

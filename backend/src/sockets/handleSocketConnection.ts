@@ -25,14 +25,18 @@ export function handleSocketConnection(io: Server, socket: Socket) {
   });
 
   socket.on("guess", ({ message }) => {
-    console.log("word: ", socket.id, message);
-    const roomId = roomManager.removePlayer(socket.id);
+    const roomId = roomManager.getRoomOfPlayer(socket.id);
     if (roomId) {
-      const players = roomManager.getRoomPlayers(roomId);
-      SocketManager.getInstance().emitToRoom(roomId, "message", {
-        message,
-        player: socket.id,
-      });
+      const game = GameManager.getInstance().getGame(roomId);
+      if (game) {
+        const isCorrect = game.onGuess(socket.id, message);
+        message = isCorrect ? "Guessed right" : message;
+        SocketManager.getInstance().emitToRoom(roomId, "message", {
+          message,
+          player: socket.id,
+          isCorrect,
+        });
+      }
     }
   });
 

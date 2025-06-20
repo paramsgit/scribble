@@ -35,8 +35,8 @@ class DrawingState extends GameState {
     // future timer-based updates
   }
 
-  onGuess(game: Game, playerId: string, guess: string): void {
-    if (game.guessedPlayerIds.has(playerId)) return;
+  onGuess(game: Game, playerId: string, guess: string): boolean {
+    if (game.guessedPlayerIds.has(playerId)) return false;
     const currentWord = game.wordList[game.currentWordIndex];
     if (guess.toLowerCase() === currentWord.toLowerCase()) {
       console.log(`[Game:${game.roomId}] ${playerId} guessed correctly!`);
@@ -61,7 +61,9 @@ class DrawingState extends GameState {
           game.setState(new DrawingState());
         }, 2000);
       }
+      return true;
     }
+    return false;
   }
 
   private pickWord(): string {

@@ -64,8 +64,8 @@ class Game {
     this.state.onTick(this);
   }
 
-  public onGuess(playerId: string, guess: string) {
-    this.state.onGuess(this, playerId, guess);
+  public onGuess(playerId: string, guess: string): boolean {
+    return this.state.onGuess(this, playerId, guess);
   }
 }
 
