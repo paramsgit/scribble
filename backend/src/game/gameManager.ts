@@ -51,9 +51,12 @@ class GameManager {
     }
     return success;
   }
-
   public getGame(roomId: string): Game | undefined {
     return this.games.get(roomId);
+  }
+  public getDrawerId(roomId: string): string | undefined {
+    const game = this.games.get(roomId);
+    return game?.drawerId;
   }
 
   public removeGame(roomId: string) {

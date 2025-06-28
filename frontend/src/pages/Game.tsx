@@ -6,9 +6,17 @@ import Players from "../components/game/Players";
 import ChatContainer from "../components/game/ChatContainer";
 import SocketManager from "../utils/socket";
 import GroundContainer from "../components/game/GroundContainer";
+export interface TurnInfo {
+  drawerId: string;
+  word: string;
+}
+
 const Game = ({ roomData }) => {
   const socket = SocketManager.getInstance();
-  const [turnInfo, setTurnInfo] = useState({ drawerId: "", word: "" });
+  const [turnInfo, setTurnInfo] = useState<TurnInfo>({
+    drawerId: "",
+    word: "",
+  });
   useEffect(() => {
     const wordHandler = (data) => {
       console.log("got a message:", data);
@@ -35,7 +43,7 @@ const Game = ({ roomData }) => {
         playersContent={
           <Players drawer={turnInfo.drawerId} data={roomData?.players} />
         }
-        groundContent={<GroundContainer />}
+        groundContent={<GroundContainer turnInfo={turnInfo} />}
         messagesContent={<ChatContainer getPlayerDetails={getPlayerDetails} />}
         groundClassName="p-4 lg:pr-2"
         playersClassName="p-4 pr-2 lg:pr-4 lg:pb-2"
