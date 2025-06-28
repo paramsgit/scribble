@@ -1,8 +1,10 @@
 import React from "react";
 import { cn } from "../../utils/cn";
 import { PencilSvg } from "../../config";
+import SocketManager from "../../utils/socket";
 
 const Players = ({ data, drawer }) => {
+  const socket = SocketManager.getInstance();
   return (
     <div className="bg-neutral-900 p-2 overflow-hidden h-full">
       <div className="overflow-y-auto h-full flex flex-col ">
@@ -13,7 +15,7 @@ const Players = ({ data, drawer }) => {
               name={item?.name}
               score={item?.score}
               isDrawing={drawer === item.id}
-              isCurrentPlayer={true}
+              isCurrentPlayer={socket.id === item.id}
             />
           );
         })}

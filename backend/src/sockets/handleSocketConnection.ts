@@ -39,6 +39,19 @@ export function handleSocketConnection(io: Server, socket: Socket) {
       }
     }
   });
+  socket.on("draw-command", ({ commands }) => {
+    console.log(commands);
+    const roomId = roomManager.getRoomOfPlayer(socket.id);
+    if (roomId) {
+      const drawerId = GameManager.getInstance().getDrawerId(roomId);
+      if (drawerId === socket.id) {
+        SocketManager.getInstance().emitToRoom(roomId, "draw-command", {
+          commands,
+          drawer: socket.id,
+        });
+      }
+    }
+  });
 
   socket.on("disconnect", () => {
     console.log("Disconnected: ", socket.id);
@@ -72,8 +85,13 @@ function addPlayerToGame(
   const game = GameManager.getInstance().addPlayerToGame(roomId, player);
   if (players.length >= 2) {
     if (!(game.getState() instanceof DrawingState)) {
-      game.setState(new DrawingState());
+      setTimeout(() => {
+        console.log("this is called");
+        game.setState(new DrawingState());
+      }, 5000);
+      SocketManager.getInstance().emitToRoom(roomId, "game-start", game);
     }
+    SocketManager.getInstance().emitToPlayer(player.id, "game", game);
   }
   // SocketManager.getInstance().emitToRoom(roomId, "game", game);
   return game;
