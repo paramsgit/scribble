@@ -17,7 +17,7 @@ class DrawingState extends GameState {
     game.wordList.push(word);
     game.drawerId = this.pickDrawer(game);
     game.guessedPlayerIds.clear();
-
+    game.currentWord = { word, time: new Date() };
     console.log(
       `[Game:${game.roomId}] New word started ${word}. Drawer: ${game.drawerId}`
     );
