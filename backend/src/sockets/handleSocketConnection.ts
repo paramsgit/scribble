@@ -45,7 +45,6 @@ export function handleSocketConnection(io: Server, socket: Socket) {
     }
   });
   socket.on("draw-command", ({ commands }) => {
-    console.log(commands);
     const roomId = roomManager.getRoomOfPlayer(socket.id);
     if (roomId) {
       const drawerId = GameManager.getInstance().getDrawerId(roomId);
@@ -88,7 +87,9 @@ function addPlayerToGame(
   players: Player[]
 ): Game {
   const game = GameManager.getInstance().addPlayerToGame(roomId, player);
+  console.log("added player to game");
   if (players.length >= 2) {
+    console.log(game.getState() instanceof DrawingState);
     if (!(game.getState() instanceof DrawingState)) {
       setTimeout(() => {
         console.log("this is called");
@@ -96,7 +97,17 @@ function addPlayerToGame(
       }, 5000);
       SocketManager.getInstance().emitToRoom(roomId, "game-start", game);
     }
-    SocketManager.getInstance().emitToPlayer(player.id, "game", game);
+
+    // TODO: Create diff fxn for it
+    const oldTime: Date = game.currentWord?.time;
+    const currentTime = new Date();
+    const diffInMs = currentTime.getTime() - oldTime.getTime();
+    const diffInSeconds = 10 - Math.floor(diffInMs / 1000);
+
+    SocketManager.getInstance().emitToPlayer(player.id, "game-details", {
+      word_length: game.currentWord?.word?.length,
+      remaining_time: diffInSeconds,
+    });
   }
   // SocketManager.getInstance().emitToRoom(roomId, "game", game);
   return game;
