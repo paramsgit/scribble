@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import NetworkLogo from "../../../assets/NetworkLogo";
-import { cn } from "../../../utils/cn";
-import TimerLogo from "../../../assets/TimerLogo";
-import UnderScoreLogo from "../../../assets/UnderScoreLogo";
+import NetworkLogo from "../../../../assets/NetworkLogo";
+import { cn } from "../../../../utils/cn";
+import TimerLogo from "../../../../assets/TimerLogo";
+import UnderScoreLogo from "../../../../assets/UnderScoreLogo";
+import RenderEmptyWord from "./RenderEmptyWord";
 
-const GameHeader = ({ word }) => {
+const GameHeader = ({ wordLength, word }) => {
   const [seconds, setSeconds] = useState(0);
 
   const formatTime = (totalSeconds) => {
@@ -14,15 +15,15 @@ const GameHeader = ({ word }) => {
   };
 
   useEffect(() => {
-    if (word) {
-      setSeconds(5);
+    if (wordLength) {
+      setSeconds(10);
       const interval = setInterval(() => {
         setSeconds((prev) => Math.max(prev - 1, 0));
       }, 1000);
 
       return () => clearInterval(interval);
     }
-  }, [word]);
+  }, [wordLength]);
 
   return (
     <div className="w-full bg-zinc-900 text-white py-2 px-4 flex items-center justify-between relative">
@@ -35,28 +36,12 @@ const GameHeader = ({ word }) => {
       </div>
 
       <div className="absolute left-1/2 transform -translate-x-1/2 text-base font-semibold whitespace-nowrap flex ">
-        <RenderEmptyWord word={word} />
+        <RenderEmptyWord length={wordLength} word={word} />
       </div>
 
       <div className="text-lg hidden ">
         <NetworkLogo classNames={cn("w-8")} />
       </div>
-    </div>
-  );
-};
-
-const RenderEmptyWord = ({ word }) => {
-  return (
-    <div className="flex">
-      {word
-        .split("")
-        .map((char, index) =>
-          char === " " ? (
-            <div key={index} className="w-6" />
-          ) : (
-            <UnderScoreLogo key={index} className={"w-6"} />
-          )
-        )}
     </div>
   );
 };

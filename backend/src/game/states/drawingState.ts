@@ -4,7 +4,7 @@ import Game from "../game";
 import GameState from "./gameState";
 
 class DrawingState extends GameState {
-  private timeLimit = 5 * 1000; // 60 sec
+  private timeLimit = 10 * 1000; // 10 sec
 
   onEnter(game: Game): void {
     game.currentWordIndex++;
@@ -22,7 +22,7 @@ class DrawingState extends GameState {
       `[Game:${game.roomId}] New word started ${word}. Drawer: ${game.drawerId}`
     );
     SocketManager.getInstance().emitToRoom(game.roomId, "word-update", {
-      word: word,
+      word_length: word?.length,
       drawer: game.drawerId,
     });
 

@@ -30,6 +30,11 @@ export function handleSocketConnection(io: Server, socket: Socket) {
       const game = GameManager.getInstance().getGame(roomId);
       if (game) {
         const isCorrect = game.onGuess(socket.id, message);
+        if (isCorrect) {
+          SocketManager.getInstance().emitToPlayer(socket.id, "correct-guess", {
+            word: message,
+          });
+        }
         message = isCorrect ? "Guessed right" : message;
         SocketManager.getInstance().emitToRoom(roomId, "message", {
           message,

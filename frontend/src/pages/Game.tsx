@@ -8,23 +8,28 @@ import SocketManager from "../utils/socket";
 import GroundContainer from "../components/game/GroundContainer";
 export interface TurnInfo {
   drawerId: string;
-  word: string;
+  word?: string;
+  word_length: number;
 }
 
 const Game = ({ roomData }) => {
   const socket = SocketManager.getInstance();
   const [turnInfo, setTurnInfo] = useState<TurnInfo>({
     drawerId: "",
-    word: "",
+    word_length: 0,
   });
   useEffect(() => {
     const wordHandler = (data) => {
-      console.log("got a message:", data);
-      setTurnInfo({ drawerId: data.drawer, word: data.word });
+      setTurnInfo({ drawerId: data.drawer, word_length: data.word_length });
+    };
+    const correctGuessHandler = (data) => {
+      setTurnInfo((prev) => ({ ...prev, word: data.word }));
     };
     socket.on("word-update", wordHandler);
+    socket.on("correct-guess", correctGuessHandler);
     return () => {
       socket.off("word-update", wordHandler);
+      socket.off("correct-guess", correctGuessHandler);
     };
   }, []);
 
