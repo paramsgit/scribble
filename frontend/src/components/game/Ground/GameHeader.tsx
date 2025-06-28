@@ -4,7 +4,7 @@ import { cn } from "../../../utils/cn";
 import TimerLogo from "../../../assets/TimerLogo";
 import UnderScoreLogo from "../../../assets/UnderScoreLogo";
 
-const GameHeader = () => {
+const GameHeader = ({ word }) => {
   const [seconds, setSeconds] = useState(0);
 
   const formatTime = (totalSeconds) => {
@@ -14,12 +14,15 @@ const GameHeader = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((prev) => prev + 1);
-    }, 1000);
+    if (word) {
+      setSeconds(5);
+      const interval = setInterval(() => {
+        setSeconds((prev) => Math.max(prev - 1, 0));
+      }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }
+  }, [word]);
 
   return (
     <div className="w-full bg-zinc-900 text-white py-2 px-4 flex items-center justify-between relative">
@@ -32,7 +35,7 @@ const GameHeader = () => {
       </div>
 
       <div className="absolute left-1/2 transform -translate-x-1/2 text-base font-semibold whitespace-nowrap flex ">
-        <RenderEmptyWord word={"Apple Eat"} />
+        <RenderEmptyWord word={word} />
       </div>
 
       <div className="text-lg hidden ">
