@@ -11,6 +11,7 @@ export interface TurnInfo {
   word?: string;
   time?: number;
   word_length: number;
+  word_number?: number;
 }
 
 const Game = ({ roomData }) => {
@@ -19,13 +20,21 @@ const Game = ({ roomData }) => {
     drawerId: "",
     word_length: 0,
     time: 0,
+    word_number: 0,
   });
 
   useEffect(() => {
     const wordHandler = (data) => {
-      setTurnInfo({ drawerId: data.drawer, word_length: data.word_length });
+      setTurnInfo({
+        drawerId: data.drawer,
+        word_length: data.word_length,
+        word_number: data?.word_number,
+      });
     };
     const correctGuessHandler = (data) => {
+      setTurnInfo((prev) => ({ ...prev, word: data.word }));
+    };
+    const receivedWord = (data) => {
       setTurnInfo((prev) => ({ ...prev, word: data.word }));
     };
     const updateCurrentGameDetails = (data) => {
@@ -33,6 +42,7 @@ const Game = ({ roomData }) => {
       setTurnInfo(data);
     };
     socket.on("word-update", wordHandler);
+    socket.on("draw-word", receivedWord);
     socket.on("game-details", updateCurrentGameDetails);
     socket.on("correct-guess", correctGuessHandler);
     return () => {

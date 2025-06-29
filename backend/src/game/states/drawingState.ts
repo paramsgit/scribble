@@ -17,13 +17,17 @@ class DrawingState extends GameState {
     game.wordList.push(word);
     game.drawerId = this.pickDrawer(game);
     game.guessedPlayerIds.clear();
-    game.currentWord = { word, time: new Date() };
+    game.currentWord = { word, time: new Date(), id: game.currentWord.id + 1 };
     console.log(
       `[Game:${game.roomId}] New word started ${word}. Drawer: ${game.drawerId}`
     );
     SocketManager.getInstance().emitToRoom(game.roomId, "word-update", {
       word_length: word?.length,
       drawer: game.drawerId,
+      word_number: game.currentWord.id,
+    });
+    SocketManager.getInstance().emitToPlayer(game.drawerId, "draw-word", {
+      word: game.currentWord.word,
     });
 
     game.timer = setTimeout(() => {
