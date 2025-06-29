@@ -10,6 +10,7 @@ const GroundContainer = ({ turnInfo }: { turnInfo: TurnInfo }) => {
         wordLength={turnInfo.word_length}
         word={turnInfo.word}
         time={turnInfo?.time}
+        wordNumber={turnInfo?.word_number}
       />
       <DrawingBoard drawer={turnInfo.drawerId} />
     </div>

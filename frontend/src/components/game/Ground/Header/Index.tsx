@@ -5,7 +5,7 @@ import TimerLogo from "../../../../assets/TimerLogo";
 import UnderScoreLogo from "../../../../assets/UnderScoreLogo";
 import RenderEmptyWord from "./RenderEmptyWord";
 
-const GameHeader = ({ wordLength, word, time = 0 }) => {
+const GameHeader = ({ wordLength, wordNumber, word, time = 0 }) => {
   const [seconds, setSeconds] = useState(time);
 
   const formatTime = (totalSeconds) => {
@@ -23,7 +23,7 @@ const GameHeader = ({ wordLength, word, time = 0 }) => {
 
       return () => clearInterval(interval);
     }
-  }, [wordLength]);
+  }, [wordNumber]);
 
   return (
     <div className="w-full bg-zinc-900 text-white py-2 px-4 flex items-center justify-between relative">

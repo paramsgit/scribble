@@ -10,7 +10,7 @@ class Game {
   public players: Player[];
   public wordList: string[] = [];
   public currentWordIndex = -1;
-  public currentWord = { word: "", time: new Date() };
+  public currentWord = { word: "", time: new Date(), id: 0 };
   public drawerId: string = "";
   public guessedPlayerIds: Set<string> = new Set();
   public timer: NodeJS.Timeout | null = null;
