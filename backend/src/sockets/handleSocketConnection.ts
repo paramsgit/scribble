@@ -44,6 +44,7 @@ export function handleSocketConnection(io: Server, socket: Socket) {
       }
     }
   });
+
   socket.on("draw-command", ({ commands }) => {
     const roomId = roomManager.getRoomOfPlayer(socket.id);
     if (roomId) {
@@ -55,6 +56,25 @@ export function handleSocketConnection(io: Server, socket: Socket) {
         });
       }
     }
+  });
+
+  socket.on("request-game-details", ({ roomId }: { roomId: string }) => {
+    console.log("get game: ", socket.id);
+    // TODO: Create diff fxn for it
+    const game = GameManager.getInstance().getGame(roomId);
+    if (!game) {
+      return;
+    }
+    const oldTime: Date = game.currentWord?.time;
+    const currentTime = new Date();
+    const diffInMs = currentTime.getTime() - oldTime.getTime();
+    const diffInSeconds = 10 - Math.floor(diffInMs / 1000);
+
+    SocketManager.getInstance().emitToPlayer(socket.id, "game-details", {
+      word_length: game.currentWord?.word?.length,
+      drawer: game.drawerId,
+      time: diffInSeconds - 1,
+    });
   });
 
   socket.on("disconnect", () => {
@@ -97,18 +117,6 @@ function addPlayerToGame(
       }, 5000);
       SocketManager.getInstance().emitToRoom(roomId, "game-start", game);
     }
-
-    // TODO: Create diff fxn for it
-    const oldTime: Date = game.currentWord?.time;
-    const currentTime = new Date();
-    const diffInMs = currentTime.getTime() - oldTime.getTime();
-    const diffInSeconds = 10 - Math.floor(diffInMs / 1000);
-
-    SocketManager.getInstance().emitToPlayer(player.id, "game-details", {
-      word_length: game.currentWord?.word?.length,
-      remaining_time: diffInSeconds,
-    });
   }
-  // SocketManager.getInstance().emitToRoom(roomId, "game", game);
   return game;
 }
