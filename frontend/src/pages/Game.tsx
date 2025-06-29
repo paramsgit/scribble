@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import GameLayout from "../components/game/GameLayout";
 import { PlayersVisibilityProvider } from "../context/PlayersVisibilityContext";
 import TogglePlayersButton from "../components/game/TogglePlayerContainer";
@@ -9,6 +9,7 @@ import GroundContainer from "../components/game/GroundContainer";
 export interface TurnInfo {
   drawerId: string;
   word?: string;
+  time?: number;
   word_length: number;
 }
 
@@ -17,7 +18,9 @@ const Game = ({ roomData }) => {
   const [turnInfo, setTurnInfo] = useState<TurnInfo>({
     drawerId: "",
     word_length: 0,
+    time: 0,
   });
+
   useEffect(() => {
     const wordHandler = (data) => {
       setTurnInfo({ drawerId: data.drawer, word_length: data.word_length });
@@ -25,22 +28,19 @@ const Game = ({ roomData }) => {
     const correctGuessHandler = (data) => {
       setTurnInfo((prev) => ({ ...prev, word: data.word }));
     };
+    const updateCurrentGameDetails = (data) => {
+      console.log("get details", data);
+      setTurnInfo(data);
+    };
     socket.on("word-update", wordHandler);
+    socket.on("game-details", updateCurrentGameDetails);
     socket.on("correct-guess", correctGuessHandler);
     return () => {
       socket.off("word-update", wordHandler);
       socket.off("correct-guess", correctGuessHandler);
+      socket.off("game-details", updateCurrentGameDetails);
     };
   }, []);
-
-  const getPlayerDetails = (socketId: string) => {
-    const players = roomData?.players;
-    if (!players) {
-      return null;
-    }
-    const player = players?.find((player) => player.id === socketId);
-    return player;
-  };
 
   return (
     <PlayersVisibilityProvider>
@@ -49,7 +49,7 @@ const Game = ({ roomData }) => {
           <Players drawer={turnInfo.drawerId} data={roomData?.players} />
         }
         groundContent={<GroundContainer turnInfo={turnInfo} />}
-        messagesContent={<ChatContainer getPlayerDetails={getPlayerDetails} />}
+        messagesContent={<ChatContainer players={roomData?.players} />}
         groundClassName="p-4 lg:pr-2"
         playersClassName="p-4 pr-2 lg:pr-4 lg:pb-2"
         messagesClassName="p-4 pl-2 lg:pl-4 lg:pt-2"

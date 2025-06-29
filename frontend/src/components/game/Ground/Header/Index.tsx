@@ -5,8 +5,8 @@ import TimerLogo from "../../../../assets/TimerLogo";
 import UnderScoreLogo from "../../../../assets/UnderScoreLogo";
 import RenderEmptyWord from "./RenderEmptyWord";
 
-const GameHeader = ({ wordLength, word }) => {
-  const [seconds, setSeconds] = useState(0);
+const GameHeader = ({ wordLength, word, time = 0 }) => {
+  const [seconds, setSeconds] = useState(time);
 
   const formatTime = (totalSeconds) => {
     const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
