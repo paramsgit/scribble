@@ -5,7 +5,7 @@ import {
 } from "../../../context/CommandManager";
 import SocketManager from "../../../utils/socket";
 import { debounce } from "../../../utils/debounce";
-
+import { debounceDelay } from "../../../config";
 const DrawingBoard = ({ drawer }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -15,7 +15,6 @@ const DrawingBoard = ({ drawer }) => {
   const commandManagerRef = useRef<CommandManager>(new CommandManager());
   const socket = SocketManager.getInstance();
   let commandArray: DrawLineCommand[] = [];
-  const debounceDelay = 500; //TODO: get it ir from config
 
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
