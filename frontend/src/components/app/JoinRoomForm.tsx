@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import SocketManager from "../../utils/socket";
+import { RoomData } from "../../pages/Home";
 
-const JoinRoomForm = ({ setRoomData }) => {
+interface JoinRoomFormProps {
+  roomData: RoomData | null;
+  setRoomData: React.Dispatch<React.SetStateAction<RoomData | null>>;
+}
+
+const JoinRoomForm = ({ roomData, setRoomData }: JoinRoomFormProps) => {
   const socket = SocketManager.getInstance();
   const [connected, setConnected] = useState(false);
 
@@ -16,6 +22,7 @@ const JoinRoomForm = ({ setRoomData }) => {
       console.log("Disconnected");
     });
     socket.on("room-update", (data) => {
+      console.log(roomData?.roomId);
       setRoomData(data);
       console.log("Joined room:", data);
     });
@@ -25,6 +32,7 @@ const JoinRoomForm = ({ setRoomData }) => {
       socket.off("disconnect");
     };
   }, []);
+
   function joinRoom() {
     console.log("join room called");
     if (socket) {

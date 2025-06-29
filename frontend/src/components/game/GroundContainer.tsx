@@ -6,7 +6,11 @@ import { TurnInfo } from "../../pages/Game";
 const GroundContainer = ({ turnInfo }: { turnInfo: TurnInfo }) => {
   return (
     <div className=" h-[95%]">
-      <GameHeader wordLength={turnInfo.word_length} word={turnInfo.word} />
+      <GameHeader
+        wordLength={turnInfo.word_length}
+        word={turnInfo.word}
+        time={turnInfo?.time}
+      />
       <DrawingBoard drawer={turnInfo.drawerId} />
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import SocketManager from "../../utils/socket";
 import { cn } from "../../utils/cn";
 
@@ -10,7 +10,7 @@ interface Message {
   player?: string;
 }
 
-const ChatContainer = ({ getPlayerDetails }) => {
+const ChatContainer = ({ players }) => {
   const socket = SocketManager.getInstance();
   const [messages, setMessages] = React.useState<Message[]>([
     {
@@ -31,6 +31,12 @@ const ChatContainer = ({ getPlayerDetails }) => {
       socket.off("message", messageHandler);
     };
   }, []);
+
+  const getPlayerDetails = (socketId: string | undefined) => {
+    if (!players) return null;
+    console.log("players", players);
+    return players.find((player) => player.id === socketId);
+  };
 
   const handleNewMessage = (data: Message) => {
     const player = getPlayerDetails(data.player);
