@@ -82,6 +82,10 @@ const DrawingBoard = ({ drawer }) => {
     return () => window.removeEventListener("mouseup", handleMouseUp);
   }, []);
 
+  useEffect(() => {
+    clearCanvas();
+  }, [drawer]);
+
   const getCanvasPos = (e: React.MouseEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -125,6 +129,16 @@ const DrawingBoard = ({ drawer }) => {
     // socket.emit("draw-command", { commands: [command] });
     commandArray.push(command);
     EmitWithDebounce(commandArray);
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
   const EmitWithDebounce = debounce((commands) => {
