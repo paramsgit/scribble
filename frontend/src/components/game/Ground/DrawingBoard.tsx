@@ -1,20 +1,31 @@
 import React, { useRef, useEffect, useState } from "react";
 import {
+  CommandHistoryItem,
   CommandManager,
   DrawLineCommand,
 } from "../../../context/CommandManager";
 import SocketManager from "../../../utils/socket";
 import { debounce } from "../../../utils/debounce";
 import { debounceDelay } from "../../../config";
-const DrawingBoard = ({ drawer }) => {
+import { cn } from "../../../utils/cn";
+
+interface DrawCommandHistoryItem {
+  commands: CommandHistoryItem[];
+  startIndex: number;
+  lastIndex: number | undefined;
+}
+
+const DrawingBoard = ({ drawer }: { drawer: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [color, setColor] = useState("#ffffff");
+  const [color, setColor] = useState("#000000");
   const [lineWidth, setLineWidth] = useState(5);
   const [isEraser, setIsEraser] = useState(false);
   const commandManagerRef = useRef<CommandManager>(new CommandManager());
   const socket = SocketManager.getInstance();
-  let commandArray: DrawLineCommand[] = [];
+  const [isUndoBtnDisabled, setIsUndoBtnDisabled] = useState(true);
+  const commandArrayRef = useRef<CommandHistoryItem[]>([]);
+  const drawCommandHistoryArrayRef = useRef<DrawCommandHistoryItem[]>([]);
 
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -53,15 +64,15 @@ const DrawingBoard = ({ drawer }) => {
       const context = canvas.getContext("2d");
       if (!context) return;
       if (drawer != socket.id) {
-        commands?.forEach((command) => {
+        commands?.forEach((item: any) => {
           const commandArray: [number, number, number, number, string, number] =
             [
-              command.x1,
-              command.y1,
-              command.x2,
-              command.y2,
-              command.color,
-              command.width,
+              item.command.x1,
+              item.command.y1,
+              item.command.x2,
+              item.command.y2,
+              item.command.color,
+              item.command.width,
             ];
           const cmd = new DrawLineCommand(...commandArray);
           cmd.execute(context);
@@ -96,7 +107,7 @@ const DrawingBoard = ({ drawer }) => {
 
   const startDrawing = (e: React.MouseEvent) => {
     console.log(drawer, socket.id);
-    if (drawer !== socket.id) return;
+    // if (drawer !== socket.id) return;
     const pos = getCanvasPos(e);
     lastPos.current = pos;
     setIsDrawing(true);
@@ -122,12 +133,13 @@ const DrawingBoard = ({ drawer }) => {
       lineWidth
     );
 
-    commandManagerRef.current.executeCommand(command, context);
+    const newCommand = commandManagerRef.current.executeCommand(
+      command,
+      context
+    );
     lastPos.current = currentPos;
-
-    // socket.emit("draw-command", { commands: [command] });
-    commandArray.push(command);
-    EmitWithDebounce(commandArray);
+    commandArrayRef.current.push(newCommand);
+    EmitWithDebounce(commandArrayRef.current);
   };
 
   const clearCanvas = () => {
@@ -140,9 +152,25 @@ const DrawingBoard = ({ drawer }) => {
     context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
-  const EmitWithDebounce = debounce((commands) => {
+  const EmitWithDebounce = debounce((commands: CommandHistoryItem[]) => {
     socket.emit("draw-command", { commands });
-    commandArray = [];
+    const drawCommandHistoryArray = drawCommandHistoryArrayRef.current;
+    let startIndex = 0;
+    if (drawCommandHistoryArray?.length) {
+      startIndex =
+        1 +
+        (drawCommandHistoryArray[drawCommandHistoryArray?.length - 1]
+          ?.lastIndex ?? 0); //TODO, Maybe need to fix type
+    }
+    const lastIndex = commands[commands.length - 1]?.index;
+    drawCommandHistoryArray.push({
+      commands,
+      startIndex,
+      lastIndex,
+    });
+    setIsUndoBtnDisabled(drawCommandHistoryArrayRef.current.length == 0); //will be true
+
+    commandArrayRef.current.length = 0;
   }, debounceDelay);
 
   const stopDrawing = () => {
@@ -156,22 +184,33 @@ const DrawingBoard = ({ drawer }) => {
 
     const context = canvas.getContext("2d");
     if (!context) return;
-    console.log("undoing");
-    commandManagerRef.current.undoLast(context);
+    const lastCommands = drawCommandHistoryArrayRef.current.pop();
+    setIsUndoBtnDisabled(drawCommandHistoryArrayRef.current.length == 0);
+
+    if (lastCommands) {
+      if (!lastCommands.lastIndex) {
+        return;
+      }
+      commandManagerRef.current.undoRange(
+        lastCommands.startIndex,
+        lastCommands.lastIndex,
+        context
+      );
+    }
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-gray-100 dark:bg-white">
+    <div className="flex flex-col h-full w-full bg-gray-100">
       <canvas
         ref={canvasRef}
-        className="flex-1 bg-white dark:bg-neutral-900 border border-gray-300 dark:border-gray-700"
+        className="flex-1 bg-white border border-gray-300"
         onMouseDown={startDrawing}
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         // onMouseOut={stopDrawing}
       />
 
-      <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-neutral-800 border-t border-gray-300 dark:border-gray-700">
+      <div className="flex items-center justify-between p-2 bg-gray-200 border-t border-gray-300 dark:border-gray-700">
         <div className="flex items-center gap-2">
           <label className="text-sm text-gray-900 dark:text-gray-100">
             Color:
@@ -190,15 +229,14 @@ const DrawingBoard = ({ drawer }) => {
         <div className="space-x-2">
           <button
             onClick={() => undoLast()}
-            className={`px-3 py-1 rounded text-sm font-medium ${
-              isEraser
-                ? "bg-red-500 text-white"
-                : "bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
-            }`}
+            className={cn(
+              `px-3 py-1 rounded text-sm font-medium bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100`,
+              isUndoBtnDisabled && "disabled"
+            )}
           >
             Undo
           </button>
-          <button
+          {/* <button
             onClick={() => setIsEraser(!isEraser)}
             className={`px-3 py-1 rounded text-sm font-medium ${
               isEraser
@@ -207,7 +245,7 @@ const DrawingBoard = ({ drawer }) => {
             }`}
           >
             {isEraser ? "Drawing" : "Eraser"}
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
