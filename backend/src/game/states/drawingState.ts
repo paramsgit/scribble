@@ -2,9 +2,9 @@
 import SocketManager from "../../sockets/socketManager";
 import Game from "../game";
 import GameState from "./gameState";
-
+import config from "../../../config";
 class DrawingState extends GameState {
-  private timeLimit = 10 * 1000; // 10 sec
+  private timeLimit = config.gameTime * 1000;
 
   onEnter(game: Game): void {
     game.currentWordIndex++;

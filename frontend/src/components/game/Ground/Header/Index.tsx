@@ -4,11 +4,24 @@ import { cn } from "../../../../utils/cn";
 import TimerLogo from "../../../../assets/TimerLogo";
 import UnderScoreLogo from "../../../../assets/UnderScoreLogo";
 import RenderEmptyWord from "./RenderEmptyWord";
+import { gameTime } from "../../../../config";
 
-const GameHeader = ({ wordLength, wordNumber, word, time = 0 }) => {
+interface GameHeaderProps {
+  wordLength: number;
+  wordNumber: number | undefined;
+  word: string | undefined;
+  time: number | undefined;
+}
+
+const GameHeader = ({
+  wordLength,
+  wordNumber,
+  word,
+  time = 0,
+}: GameHeaderProps) => {
   const [seconds, setSeconds] = useState(time);
 
-  const formatTime = (totalSeconds) => {
+  const formatTime = (totalSeconds: number) => {
     const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
     const secs = String(totalSeconds % 60).padStart(2, "0");
     return `${mins}:${secs}`;
@@ -16,7 +29,7 @@ const GameHeader = ({ wordLength, wordNumber, word, time = 0 }) => {
 
   useEffect(() => {
     if (wordLength) {
-      setSeconds(10);
+      setSeconds(gameTime);
       const interval = setInterval(() => {
         setSeconds((prev) => Math.max(prev - 1, 0));
       }, 1000);
@@ -26,7 +39,7 @@ const GameHeader = ({ wordLength, wordNumber, word, time = 0 }) => {
   }, [wordNumber]);
 
   return (
-    <div className="w-full bg-zinc-900 text-white py-2 px-4 flex items-center justify-between relative">
+    <div className="w-full bg-gray-100 text-black py-2 px-4 flex items-center justify-between relative">
       <div className="flex items-center space-x-3">
         <span className="text-lg hidden sm:inline">
           <TimerLogo className={"w-8 text-gray-100!"} />

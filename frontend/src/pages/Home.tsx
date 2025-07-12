@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import JoinRoomForm from "../components/app/JoinRoomForm";
 import Game from "./Game";
 import SocketManager from "../utils/socket";
+import bgImage from "../assets/bg.png";
+
 export interface Player {
   id: string;
   name: string;
@@ -23,8 +25,10 @@ const Home = () => {
     }
   }, [roomData?.roomId]);
   return (
-    <div>
-      {/* <h1 className="py-6">{roomData?.roomId}</h1> */}
+    <div
+      className="bg-repeat h-screen text-white"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
       {roomData ? (
         <Game roomData={roomData} />
       ) : (

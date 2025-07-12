@@ -52,7 +52,7 @@ const ChatContainer = ({ players }) => {
     });
   };
   return (
-    <div className="bg-neutral-900 h-full">
+    <div className="bg-white h-full">
       <ChatComponent socket={socket} messages={messages} />
     </div>
   );
@@ -93,7 +93,7 @@ const ChatComponent = ({ socket, messages }) => {
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="flex-1 p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-0"
+            className="flex-1 p-2 bg-gray-200/70 text-black placeholder-gray-600 rounded-lg focus:outline-none focus:ring-0"
             placeholder="Type a message..."
           />
         </form>
@@ -107,8 +107,8 @@ const ChatMessage = ({ message }) => {
     <div className={`flex`}>
       <div
         className={cn(
-          `w-full flex gap-2 py-2 px-2 text-gray-200 `,
-          message.id % 2 && "bg-zinc-800",
+          `w-full flex gap-2 py-2 px-2 bg-gray-100 text-gray-800 `,
+          message.id % 2 && "bg-gray-200",
           message.isCorrect && "font-bold text-green-500"
         )}
       >

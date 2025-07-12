@@ -14,7 +14,7 @@ const RenderEmptyWord = ({ length, word }) => {
         return (
           <span
             key={index}
-            className="w-9 h-9 flex justify-center items-center border-b-2 border-indigo-500 text-2xl font-bold text-gray-200  relative overflow-hidden"
+            className="w-9 h-9 flex justify-center items-center border-b-2 border-indigo-500 text-2xl font-bold text-gray-600  relative overflow-hidden"
           >
             <span
               className={`transition-all duration-300 ease-out ${

@@ -6,7 +6,7 @@ import {
 } from "../../../context/CommandManager";
 import SocketManager from "../../../utils/socket";
 import { debounce } from "../../../utils/debounce";
-import { debounceDelay } from "../../../config";
+import { debounceDelay, sketchColors } from "../../../config";
 import { cn } from "../../../utils/cn";
 
 interface DrawCommandHistoryItem {
@@ -210,11 +210,9 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
         // onMouseOut={stopDrawing}
       />
 
-      <div className="flex items-center justify-between p-2 bg-gray-200 border-t border-gray-300 dark:border-gray-700">
+      <div className="flex items-center justify-between p-2 bg-gray-200 text-black border-t border-gray-300 dark:border-gray-700">
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-900 dark:text-gray-100">
-            Color:
-          </label>
+          <label className="text-sm ">Color:</label>
           <input
             type="color"
             value={color}
@@ -222,8 +220,21 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
               setColor(e.target.value);
               setIsEraser(false);
             }}
-            className="w-8 h-8"
+            className="w-8 h-8 md:hidden"
           />
+          {sketchColors.map((col) => (
+            <div
+              key={col}
+              className={`w-8 h-8 hidden md:block rounded-md cursor-pointer border-2 ${
+                col === color ? "border-black w-9 h-9" : "border-gray-300"
+              }`}
+              style={{ backgroundColor: col }}
+              onClick={() => {
+                console.log(col);
+                setColor(col);
+              }}
+            />
+          ))}
         </div>
 
         <div className="space-x-2">
