@@ -2,13 +2,24 @@
 import Game from "../game";
 import GameState from "./gameState";
 import DrawingState from "./drawingState";
+import SocketManager from "../../sockets/socketManager";
+import config from "../../../config";
 
 class WaitingState extends GameState {
   onEnter(game: Game): void {
     console.log(`[Game:${game.roomId}] Waiting for players...`);
-    // setTimeout(() => {
-    //   game.setState(new DrawingState());
-    // }, 2000); // 2 second wait
+
+    if (game.players?.length >= 2) {
+      SocketManager.getInstance().emitToRoom(game.roomId, "wait-update", {
+        waitTime: config.waitTime,
+        previousWord: game.currentWord.word,
+      });
+      setTimeout(() => {
+        game.setState(new DrawingState());
+      }, config.waitTime * 1000);
+    } else {
+      SocketManager.getInstance().emitToRoom(game.roomId, "wait-update", {});
+    }
   }
 
   onTick(game: Game): void {

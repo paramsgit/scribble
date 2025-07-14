@@ -3,6 +3,7 @@ import SocketManager from "../../sockets/socketManager";
 import Game from "../game";
 import GameState from "./gameState";
 import config from "../../../config";
+import WaitingState from "./waitingState";
 class DrawingState extends GameState {
   private timeLimit = config.gameTime * 1000;
 
@@ -31,7 +32,7 @@ class DrawingState extends GameState {
     });
 
     game.timer = setTimeout(() => {
-      game.setState(new DrawingState()); // move to next word
+      game.setState(new WaitingState()); // move to next word
     }, this.timeLimit);
   }
 
@@ -62,7 +63,7 @@ class DrawingState extends GameState {
       if (allGuessed) {
         if (game.timer) clearTimeout(game.timer);
         setTimeout(() => {
-          game.setState(new DrawingState());
+          game.setState(new WaitingState());
         }, 2000);
       }
       return true;

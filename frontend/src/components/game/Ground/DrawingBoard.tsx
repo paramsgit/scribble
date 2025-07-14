@@ -8,11 +8,16 @@ import SocketManager from "../../../utils/socket";
 import { debounce } from "../../../utils/debounce";
 import { debounceDelay, sketchColors } from "../../../config";
 import { cn } from "../../../utils/cn";
+import WaitCard from "./WaitCard";
 
 interface DrawCommandHistoryItem {
   commands: CommandHistoryItem[];
   startIndex: number;
   lastIndex: number | undefined;
+}
+interface WaitModalData {
+  waitTime?: number;
+  previousWord?: string;
 }
 
 const DrawingBoard = ({ drawer }: { drawer: string }) => {
@@ -26,6 +31,9 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
   const [isUndoBtnDisabled, setIsUndoBtnDisabled] = useState(true);
   const commandArrayRef = useRef<CommandHistoryItem[]>([]);
   const drawCommandHistoryArrayRef = useRef<DrawCommandHistoryItem[]>([]);
+  const [waitModalData, setWaitModalData] = useState<WaitModalData | null>(
+    null
+  );
 
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -79,7 +87,12 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
         });
       }
     };
+    const waitUpdateHandler = (data) => {
+      setWaitModalData(data);
+      console.log("wait data", data);
+    };
 
+    socket.on("wait-update", waitUpdateHandler);
     socket.on("draw-command", newDrawHandler);
     return () => {
       socket.off("message", newDrawHandler);
@@ -94,20 +107,21 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
 
   useEffect(() => {
     clearCanvas();
+    setWaitModalData(null);
   }, [drawer]);
 
   const getCanvasPos = (e: React.MouseEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     return {
-      x: e.clientX - canvas.offsetLeft,
-      y: e.clientY - canvas.offsetTop,
+      x: e.clientX - canvas.offsetLeft - 16,
+      y: e.clientY - canvas.offsetTop - 64,
     };
   };
 
   const startDrawing = (e: React.MouseEvent) => {
     console.log(drawer, socket.id);
-    // if (drawer !== socket.id) return;
+    if (drawer !== socket.id) return;
     const pos = getCanvasPos(e);
     lastPos.current = pos;
     setIsDrawing(true);
@@ -200,54 +214,62 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-gray-100">
+    <div className="flex flex-col h-full w-full relative pb-2">
+      {waitModalData && (
+        <WaitCard
+          waitTime={waitModalData.waitTime}
+          previousWord={waitModalData.previousWord}
+          scores={null}
+        />
+      )}
       <canvas
         ref={canvasRef}
-        className="flex-1 bg-white border border-gray-300"
+        className="flex-1 bg-white border border-gray-300 "
         onMouseDown={startDrawing}
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         // onMouseOut={stopDrawing}
       />
 
-      <div className="flex items-center justify-between p-2 bg-gray-200 text-black border-t border-gray-300 dark:border-gray-700">
-        <div className="flex items-center gap-2">
-          <label className="text-sm ">Color:</label>
-          <input
-            type="color"
-            value={color}
-            onChange={(e) => {
-              setColor(e.target.value);
-              setIsEraser(false);
-            }}
-            className="w-8 h-8 md:hidden"
-          />
-          {sketchColors.map((col) => (
-            <div
-              key={col}
-              className={`w-8 h-8 hidden md:block rounded-md cursor-pointer border-2 ${
-                col === color ? "border-black w-9 h-9" : "border-gray-300"
-              }`}
-              style={{ backgroundColor: col }}
-              onClick={() => {
-                console.log(col);
-                setColor(col);
+      {drawer === socket.id ? (
+        <div className="flex items-center justify-between p-2 bg-gray-200 text-black border-t border-gray-300 dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            <label className="text-sm ">Color:</label>
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => {
+                setColor(e.target.value);
+                setIsEraser(false);
               }}
+              className="w-8 h-8 md:hidden"
             />
-          ))}
-        </div>
+            {sketchColors.map((col) => (
+              <div
+                key={col}
+                className={`w-8 h-8 hidden md:block rounded-md cursor-pointer border-2 ${
+                  col === color ? "border-black w-9 h-9" : "border-gray-300"
+                }`}
+                style={{ backgroundColor: col }}
+                onClick={() => {
+                  console.log(col);
+                  setColor(col);
+                }}
+              />
+            ))}
+          </div>
 
-        <div className="space-x-2">
-          <button
-            onClick={() => undoLast()}
-            className={cn(
-              `px-3 py-1 rounded text-sm font-medium bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100`,
-              isUndoBtnDisabled && "disabled"
-            )}
-          >
-            Undo
-          </button>
-          {/* <button
+          <div className="space-x-2">
+            <button
+              onClick={() => undoLast()}
+              className={cn(
+                `px-3 py-1 rounded text-sm font-medium bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100`,
+                isUndoBtnDisabled && "disabled"
+              )}
+            >
+              Undo
+            </button>
+            {/* <button
             onClick={() => setIsEraser(!isEraser)}
             className={`px-3 py-1 rounded text-sm font-medium ${
               isEraser
@@ -257,8 +279,13 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
           >
             {isEraser ? "Drawing" : "Eraser"}
           </button> */}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex items-center justify-center p-2 bg-gray-200 text-black ">
+          <h1 className="h-9">Skribble</h1>
+        </div>
+      )}
     </div>
   );
 };
