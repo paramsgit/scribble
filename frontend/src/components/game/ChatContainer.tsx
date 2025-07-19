@@ -12,6 +12,7 @@ interface Message {
 
 const ChatContainer = ({ players }) => {
   const socket = SocketManager.getInstance();
+  const playersRef = React.useRef(players);
   const [messages, setMessages] = React.useState<Message[]>([
     {
       id: 1,
@@ -32,10 +33,14 @@ const ChatContainer = ({ players }) => {
     };
   }, []);
 
+  useEffect(() => {
+    playersRef.current = players;
+  }, [players]);
+
   const getPlayerDetails = (socketId: string | undefined) => {
-    if (!players) return null;
-    console.log("players", players);
-    return players.find((player) => player.id === socketId);
+    if (!playersRef.current) return null;
+    console.log("players", playersRef.current);
+    return playersRef.current.find((player) => player.id === socketId);
   };
 
   const handleNewMessage = (data: Message) => {
