@@ -10,17 +10,17 @@ interface GameHeaderProps {
   wordLength: number;
   wordNumber: number | undefined;
   word: string | undefined;
-  time: number | undefined;
+  seconds: number | undefined;
+  setSeconds: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const GameHeader = ({
   wordLength,
   wordNumber,
   word,
-  time = 0,
+  seconds = 0,
+  setSeconds,
 }: GameHeaderProps) => {
-  const [seconds, setSeconds] = useState(time);
-
   const formatTime = (totalSeconds: number) => {
     const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
     const secs = String(totalSeconds % 60).padStart(2, "0");

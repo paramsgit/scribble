@@ -15,9 +15,15 @@ interface DrawCommandHistoryItem {
   startIndex: number;
   lastIndex: number | undefined;
 }
+export interface UpdatedScores {
+  name: string;
+  value: number;
+  id: string;
+}
 interface WaitModalData {
   waitTime?: number;
   previousWord?: string;
+  scores?: UpdatedScores[];
 }
 
 const DrawingBoard = ({ drawer }: { drawer: string }) => {
@@ -89,8 +95,19 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
     };
     const waitUpdateHandler = (data) => {
       setWaitModalData(data);
-      if (data?.players) updateScores(data.players);
-      console.log("wait data", data);
+
+      if (data?.players) {
+        const newScores = calculateScoreDifferences(
+          roomData?.players,
+          data.players
+        );
+        setWaitModalData({
+          waitTime: data.waitTime,
+          previousWord: data.previousWord,
+          scores: newScores,
+        });
+        updateScores(data.players);
+      }
     };
 
     socket.on("wait-update", waitUpdateHandler);
@@ -110,6 +127,26 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
     clearCanvas();
     setWaitModalData(null);
   }, [drawer]);
+
+  function calculateScoreDifferences(currentData, newData) {
+    const map1 = new Map();
+
+    currentData.forEach((user) => {
+      map1.set(user.id, user.score || 0);
+    });
+
+    const result = newData.map((user) => {
+      const score1 = map1.get(user.id) || 0;
+      const score2 = user.score || 0;
+      return {
+        id: user.id,
+        name: user.name,
+        value: score2 - score1,
+      };
+    });
+
+    return result;
+  }
 
   const getCanvasPos = (e: React.MouseEvent) => {
     const canvas = canvasRef.current;
@@ -220,7 +257,8 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
         <WaitCard
           waitTime={waitModalData.waitTime}
           previousWord={waitModalData.previousWord}
-          scores={null}
+          scores={waitModalData.scores}
+          drawer={drawer}
         />
       )}
       <canvas
@@ -270,16 +308,6 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
             >
               Undo
             </button>
-            {/* <button
-            onClick={() => setIsEraser(!isEraser)}
-            className={`px-3 py-1 rounded text-sm font-medium ${
-              isEraser
-                ? "bg-red-500 text-white"
-                : "bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100"
-            }`}
-          >
-            {isEraser ? "Drawing" : "Eraser"}
-          </button> */}
           </div>
         </div>
       ) : (
