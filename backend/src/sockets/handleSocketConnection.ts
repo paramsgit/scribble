@@ -4,6 +4,7 @@ import SocketManager from "./socketManager";
 import GameManager from "../game/gameManager";
 import DrawingState from "../game/states/drawingState";
 import Game from "../game/game";
+import config from "../../config";
 export function handleSocketConnection(io: Server, socket: Socket) {
   const roomManager = RoomManager.getInstance();
 
@@ -68,7 +69,7 @@ export function handleSocketConnection(io: Server, socket: Socket) {
     const oldTime: Date = game.currentWord?.time;
     const currentTime = new Date();
     const diffInMs = currentTime.getTime() - oldTime.getTime();
-    const diffInSeconds = 10 - Math.floor(diffInMs / 1000);
+    const diffInSeconds = config.gameTime - Math.floor(diffInMs / 1000);
 
     SocketManager.getInstance().emitToPlayer(socket.id, "game-details", {
       word_length: game.currentWord?.word?.length,

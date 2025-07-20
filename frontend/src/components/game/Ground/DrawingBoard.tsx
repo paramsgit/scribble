@@ -9,7 +9,7 @@ import { debounce } from "../../../utils/debounce";
 import { debounceDelay, sketchColors } from "../../../config";
 import { cn } from "../../../utils/cn";
 import WaitCard from "./WaitCard";
-
+import { useRoom } from "../../../context/RoomDataContext";
 interface DrawCommandHistoryItem {
   commands: CommandHistoryItem[];
   startIndex: number;
@@ -34,7 +34,7 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
   const [waitModalData, setWaitModalData] = useState<WaitModalData | null>(
     null
   );
-
+  const { roomData, setRoomData, updateScores } = useRoom();
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
@@ -89,6 +89,7 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
     };
     const waitUpdateHandler = (data) => {
       setWaitModalData(data);
+      if (data?.players) updateScores(data.players);
       console.log("wait data", data);
     };
 

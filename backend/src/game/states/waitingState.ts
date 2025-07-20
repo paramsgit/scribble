@@ -13,6 +13,7 @@ class WaitingState extends GameState {
       SocketManager.getInstance().emitToRoom(game.roomId, "wait-update", {
         waitTime: config.waitTime,
         previousWord: game.currentWord.word,
+        players: game.players,
       });
       setTimeout(() => {
         game.setState(new DrawingState());

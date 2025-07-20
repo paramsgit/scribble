@@ -79,7 +79,7 @@ const ChatComponent = ({ socket, messages }) => {
         {messages?.length === 0 && (
           <ChatMessage
             key={"message.id"}
-            message={"Chat messages will appear here"}
+            message={{ message: "Chat messages will appear here" }}
           />
         )}
       </div>

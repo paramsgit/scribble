@@ -6,7 +6,7 @@ import Players from "../components/game/Players";
 import ChatContainer from "../components/game/ChatContainer";
 import SocketManager from "../utils/socket";
 import GroundContainer from "../components/game/GroundContainer";
-import { RoomData } from "./Home";
+import { RoomData } from "../context/RoomDataContext";
 export interface TurnInfo {
   drawerId: string;
   word?: string;

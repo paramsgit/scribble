@@ -3,22 +3,11 @@ import JoinRoomForm from "../components/composed/JoinRoomForm";
 import Game from "./Game";
 import SocketManager from "../utils/socket";
 import bgImage from "../assets/bg.png";
-
-export interface Player {
-  id: string;
-  name: string;
-  gender: "male" | "female";
-  avatarVariant?: number;
-  score?: number;
-}
-export interface RoomData {
-  roomId: string;
-  players: Player[];
-}
+import { useRoom } from "../context/RoomDataContext";
 
 const Home = () => {
   const socket = SocketManager.getInstance();
-  const [roomData, setRoomData] = useState<RoomData | null>(null);
+  const { roomData, setRoomData } = useRoom();
 
   useEffect(() => {
     if (roomData?.roomId) {

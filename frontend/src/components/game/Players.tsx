@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "../../utils/cn";
 import { PencilSvg } from "../../config";
 import SocketManager from "../../utils/socket";
-import { Player } from "../../pages/Home";
+import { Player } from "../../context/RoomDataContext";
 import { getAvatarUrl } from "../../utils/helper";
 
 interface PlayersSectionProps {

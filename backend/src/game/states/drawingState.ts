@@ -18,6 +18,7 @@ class DrawingState extends GameState {
     game.wordList.push(word);
     game.drawerId = this.pickDrawer(game);
     game.guessedPlayerIds.clear();
+    console.log("cleared player ids", game.guessedPlayerIds);
     game.currentWord = { word, time: new Date(), id: game.currentWord.id + 1 };
     console.log(
       `[Game:${game.roomId}] New word started ${word}. Drawer: ${game.drawerId}`
@@ -46,7 +47,12 @@ class DrawingState extends GameState {
     if (guess?.toLowerCase() === currentWord?.toLowerCase()) {
       console.log(`[Game:${game.roomId}] ${playerId} guessed correctly!`);
       game.guessedPlayerIds.add(playerId);
-
+      const player = game.players.find((p) => p.id === playerId);
+      const newScore = 500 - game.guessedPlayerIds.size * 50;
+      if (player) {
+        player.score = (player.score ?? 0) + newScore;
+        console.log("player score increased", newScore, player.score);
+      }
       SocketManager.getInstance().emitToRoom(
         game.roomId,
         "player-guessed-correctly",
