@@ -7,11 +7,11 @@ import Game from "../game/game";
 export function handleSocketConnection(io: Server, socket: Socket) {
   const roomManager = RoomManager.getInstance();
 
-  socket.on("join-room", ({ roomId, name }) => {
+  socket.on("join-room", ({ roomId, name = "", avatarVariant = "" }) => {
     if (!roomId) {
       roomId = findAvailableRoomId();
     }
-    roomManager.addPlayer({ id: socket.id, name }, roomId);
+    roomManager.addPlayer({ id: socket.id, name, avatarVariant }, roomId);
     socket.join(roomId);
     console.log("Plyer joined room ", roomId);
     const players = roomManager.getRoomPlayers(roomId);
@@ -21,7 +21,7 @@ export function handleSocketConnection(io: Server, socket: Socket) {
       players: players,
       roomId,
     });
-    addPlayerToGame(roomId, { id: socket.id, name }, players);
+    addPlayerToGame(roomId, { id: socket.id, name, avatarVariant }, players);
   });
 
   socket.on("guess", ({ message }) => {

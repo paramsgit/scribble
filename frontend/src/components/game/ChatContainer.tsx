@@ -13,14 +13,7 @@ interface Message {
 const ChatContainer = ({ players }) => {
   const socket = SocketManager.getInstance();
   const playersRef = React.useRef(players);
-  const [messages, setMessages] = React.useState<Message[]>([
-    {
-      id: 1,
-      message: "Hello! How can I help you?",
-      isCorrect: false,
-      timeStamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = React.useState<Message[]>([]);
 
   useEffect(() => {
     const messageHandler = (data: Message) => {
@@ -83,6 +76,12 @@ const ChatComponent = ({ socket, messages }) => {
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}
+        {messages?.length === 0 && (
+          <ChatMessage
+            key={"message.id"}
+            message={"Chat messages will appear here"}
+          />
+        )}
       </div>
 
       {/* Input Area */}

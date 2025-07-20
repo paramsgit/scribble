@@ -16,10 +16,7 @@ class GameManager {
     return GameManager.instance;
   }
 
-  public CreateGame(
-    roomId: string,
-    players: { id: string; name: string }[]
-  ): Game {
+  public CreateGame(roomId: string, players: Player[]): Game {
     if (this.games.has(roomId)) {
       const existingGame = this.games.get(roomId);
       if (existingGame) {

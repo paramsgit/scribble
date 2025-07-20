@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import JoinRoomForm from "../components/app/JoinRoomForm";
+import JoinRoomForm from "../components/composed/JoinRoomForm";
 import Game from "./Game";
 import SocketManager from "../utils/socket";
 import bgImage from "../assets/bg.png";
@@ -7,6 +7,8 @@ import bgImage from "../assets/bg.png";
 export interface Player {
   id: string;
   name: string;
+  gender: "male" | "female";
+  avatarVariant?: number;
   score?: number;
 }
 export interface RoomData {
@@ -19,7 +21,6 @@ const Home = () => {
   const [roomData, setRoomData] = useState<RoomData | null>(null);
 
   useEffect(() => {
-    console.log("this use is called");
     if (roomData?.roomId) {
       socket.emit("request-game-details", { roomId: roomData.roomId });
     }

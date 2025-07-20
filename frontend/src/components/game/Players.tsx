@@ -2,18 +2,26 @@ import React from "react";
 import { cn } from "../../utils/cn";
 import { PencilSvg } from "../../config";
 import SocketManager from "../../utils/socket";
+import { Player } from "../../pages/Home";
+import { getAvatarUrl } from "../../utils/helper";
 
-const Players = ({ data, drawer }) => {
+interface PlayersSectionProps {
+  data: Player[];
+  drawer: string;
+}
+
+const Players: React.FC<PlayersSectionProps> = ({ data, drawer }) => {
   const socket = SocketManager.getInstance();
   return (
     <div className="bg-white p-2 overflow-hidden h-full">
       <div className="overflow-y-auto h-full flex flex-col ">
-        {data?.map((item: any, index: number) => {
+        {data?.map((item, index) => {
           return (
             <PlayerTile
               key={`${item.name}+${index}`}
               name={item?.name}
-              score={item?.score}
+              avatarVariant={item?.avatarVariant}
+              score={item?.score ?? 0}
               isDrawing={drawer === item.id}
               isCurrentPlayer={socket.id === item.id}
             />
@@ -26,7 +34,21 @@ const Players = ({ data, drawer }) => {
 
 export default Players;
 
-const PlayerTile = ({ name, score, isCurrentPlayer, isDrawing }) => {
+interface PlayerTileProps {
+  name: string;
+  avatarVariant?: number;
+  score: number;
+  isCurrentPlayer: boolean;
+  isDrawing: boolean;
+}
+
+const PlayerTile: React.FC<PlayerTileProps> = ({
+  name,
+  avatarVariant,
+  score,
+  isCurrentPlayer,
+  isDrawing,
+}) => {
   return (
     <div
       className={cn(
@@ -34,24 +56,33 @@ const PlayerTile = ({ name, score, isCurrentPlayer, isDrawing }) => {
         ""
       )}
     >
-      <div className="w-10 h-10 rounded-full bg-blue-600 dark:bg-blue-500 text-white font-semibold flex items-center justify-center">
-        {name.charAt(0).toUpperCase()}
+      <div className="w-8 h-8 rounded-full text-white font-semibold flex items-center justify-center">
+        <img
+          className="w-8 h-8"
+          src={getAvatarUrl({ name, variant: avatarVariant })}
+          alt="player_icon"
+        />
       </div>
 
-      <div className="ml-4 flex-1 overflow-hidden">
-        <div className="text-sm font-medium text-gray-900 truncate">{name}</div>
-        <div className="text-xs text-gray-600 dark:text-gray-400">
-          Score: <span className="font-semibold">{score}</span>
+      <div className="ml-4 text-center overflow-hidden">
+        <div className="text-md font-semibold text-gray-900 truncate flex items-center gap-1">
+          {name}
+          {isCurrentPlayer && (
+            <span className="font-semibold text-sm text-neutral-500">
+              {" "}
+              (You)
+            </span>
+          )}
+          <img
+            className={cn("w-6", isDrawing ? "block" : "hidden")}
+            src={PencilSvg}
+            alt="Pencil"
+          />
         </div>
       </div>
-
-      {isDrawing && <img className="w-7" src={PencilSvg} alt="Pencil" />}
-
-      {isCurrentPlayer && (
-        <span className="ml-2 text-[10px] px-2 py-0.5 bg-green-100 dark:bg-green-700 text-green-800 dark:text-green-200 rounded-full font-semibold">
-          YOU
-        </span>
-      )}
+      <div className="text-xs text-gray-600  flex items-center">
+        Score: <span className="font-semibold text-lg">{score}</span>
+      </div>
     </div>
   );
 };

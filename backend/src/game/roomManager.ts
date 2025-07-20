@@ -3,6 +3,7 @@ import FinishedState from "./states/finishedState";
 
 export interface Player {
   name: string;
+  avatarVariant: string;
   id: string;
   score?: number;
 }
