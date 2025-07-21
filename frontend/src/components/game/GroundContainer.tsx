@@ -1,21 +1,23 @@
-import React, { useState } from "react";
-import GameHeader from "./Ground/Header/Index";
+import React, { useRef, useState } from "react";
+import GameHeader, { GameTimerRef } from "./Ground/Header/Index";
 import DrawingBoard from "./Ground/DrawingBoard";
 import { TurnInfo } from "../../pages/Game";
 
 const GroundContainer = ({ turnInfo }: { turnInfo: TurnInfo }) => {
-  const [seconds, setSeconds] = useState(turnInfo?.time ?? 0);
-
+  const timerRef = useRef<GameTimerRef>(null);
+  const handleStopTimer = () => {
+    timerRef.current?.stopTimer();
+  };
   return (
     <div className=" h-[95%]">
       <GameHeader
         wordLength={turnInfo.word_length}
         word={turnInfo.word}
         wordNumber={turnInfo?.word_number}
-        seconds={seconds}
-        setSeconds={setSeconds}
+        time={turnInfo.time ?? 0}
+        ref={timerRef}
       />
-      <DrawingBoard drawer={turnInfo.drawerId} />
+      <DrawingBoard stopTimer={handleStopTimer} drawer={turnInfo.drawerId} />
     </div>
   );
 };

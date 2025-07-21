@@ -10,6 +10,11 @@ import { debounceDelay, sketchColors } from "../../../config";
 import { cn } from "../../../utils/cn";
 import WaitCard from "./WaitCard";
 import { useRoom } from "../../../context/RoomDataContext";
+
+export interface DrawingBoardProps {
+  drawer: string;
+  stopTimer: () => void;
+}
 interface DrawCommandHistoryItem {
   commands: CommandHistoryItem[];
   startIndex: number;
@@ -26,7 +31,7 @@ interface WaitModalData {
   scores?: UpdatedScores[];
 }
 
-const DrawingBoard = ({ drawer }: { drawer: string }) => {
+const DrawingBoard = ({ drawer, stopTimer }: DrawingBoardProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState("#000000");
@@ -95,7 +100,7 @@ const DrawingBoard = ({ drawer }: { drawer: string }) => {
     };
     const waitUpdateHandler = (data) => {
       setWaitModalData(data);
-
+      stopTimer();
       if (data?.players) {
         const newScores = calculateScoreDifferences(
           roomData?.players,

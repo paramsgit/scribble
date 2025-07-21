@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import NetworkLogo from "../../../../assets/NetworkLogo";
 import { cn } from "../../../../utils/cn";
 import TimerLogo from "../../../../assets/TimerLogo";
@@ -10,16 +10,20 @@ interface GameHeaderProps {
   wordLength: number;
   wordNumber: number | undefined;
   word: string | undefined;
-  seconds: number | undefined;
-  setSeconds: React.Dispatch<React.SetStateAction<number>>;
+  time: number;
+  ref: any;
+}
+
+export interface GameTimerRef {
+  stopTimer: () => void;
 }
 
 const GameHeader = ({
   wordLength,
   wordNumber,
   word,
-  seconds = 0,
-  setSeconds,
+  time = 0,
+  ref,
 }: GameHeaderProps) => {
   const formatTime = (totalSeconds: number) => {
     const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
@@ -27,16 +31,30 @@ const GameHeader = ({
     return `${mins}:${secs}`;
   };
 
+  const [seconds, setSeconds] = useState(time);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (wordLength) {
       setSeconds(gameTime);
-      const interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setSeconds((prev) => Math.max(prev - 1, 0));
       }, 1000);
-
-      return () => clearInterval(interval);
     }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [wordNumber]);
+
+  // 🔁 Expose stopTimer method to parent
+  useImperativeHandle(ref, () => ({
+    stopTimer: () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    },
+  }));
 
   return (
     <div className="w-full bg-gray-100 text-black py-2 px-4 flex items-center justify-between relative">
