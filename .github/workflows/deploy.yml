@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Create SSH key from secret
+    - name: Create SSH key to connect to EC2
       run: |
         echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > ec2_key.pem
         chmod 400 ec2_key.pem
@@ -25,7 +25,21 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key_path: ec2_key.pem
         script: |
+          # Create deploy key on EC2 for private repo access
+          echo "${{ secrets.DEPLOY_KEY }}" | base64 -d > ~/.ssh/deploy-key
+          chmod 600 ~/.ssh/deploy-key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy-key
+
+          # Clone repo if not exists, otherwise pull
+          if [ ! -d "/home/ubuntu/skribble-app/.git" ]; then
+            git clone git@github.com:YOUR_USERNAME/YOUR_REPO_NAME.git /home/ubuntu/skribble-app
+          else
+            cd /home/ubuntu/skribble-app
+            git pull origin main
+          fi
+
+          # Run docker compose
           cd /home/ubuntu/skribble-app
-          git pull origin main
-          docker-compose down
-          docker-compose up -d --build
+          docker compose down
+          docker compose up -d --build
