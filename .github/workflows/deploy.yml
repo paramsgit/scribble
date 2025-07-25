@@ -2,21 +2,30 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/skribble-app
-            git pull origin main
-            docker-compose down
-            docker-compose up -d --build
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Create SSH key from secret
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > ec2_key.pem
+        chmod 400 ec2_key.pem
+
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key_path: ec2_key.pem
+        script: |
+          cd /home/ubuntu/skribble-app
+          git pull origin main
+          docker-compose down
+          docker-compose up -d --build
