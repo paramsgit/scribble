@@ -1,4 +1,3 @@
-// redis.ts
 import Redis from "ioredis";
-const redis = new Redis(); // defaults to localhost:6379
+const redis = new Redis();
 export default redis;

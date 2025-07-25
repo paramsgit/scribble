@@ -130,10 +130,8 @@ async function findAvailableRoomId(): Promise<string> {
   try {
     const roomManager = RoomManager.getInstance();
 
-    // Get all active rooms from Redis
     const activeRoomIds = await roomManager.getAllActiveRooms();
 
-    // Check each room for availability
     for (const roomId of activeRoomIds) {
       const isFull = await roomManager.isRoomFull(roomId);
       if (!isFull) {
@@ -141,11 +139,9 @@ async function findAvailableRoomId(): Promise<string> {
       }
     }
 
-    // If no available room found, create a new one
     return "room-" + Math.random().toString(36).substring(2, 8);
   } catch (error) {
     console.error("Error finding available room:", error);
-    // Fallback to creating a new room
     return "room-" + Math.random().toString(36).substring(2, 8);
   }
 }
@@ -164,7 +160,6 @@ async function addPlayerToGame(
       if (!(game.getState() instanceof DrawingState)) {
         setTimeout(async () => {
           try {
-            console.log("this is called");
             await game.setState(new DrawingState());
           } catch (error) {
             console.error("Error setting game state:", error);
@@ -180,8 +175,6 @@ async function addPlayerToGame(
   }
 }
 
-// Additional utility functions for better room management
-
 export async function getRoomStats(): Promise<{
   totalRooms: number;
   totalPlayers: number;
@@ -192,7 +185,6 @@ export async function getRoomStats(): Promise<{
     const activeRooms = await roomManager.getAllActiveRooms();
     const roomCount = await roomManager.getRoomCount();
 
-    // Get detailed stats for all rooms
     const roomsData = await roomManager.getMultipleRoomPlayers(activeRooms);
 
     const totalPlayers = Object.values(roomsData).reduce(
@@ -225,7 +217,6 @@ export async function cleanupExpiredRooms(): Promise<number> {
   }
 }
 
-// Enhanced error handling for socket events
 export function setupErrorHandling(socket: Socket) {
   socket.on("error", (error) => {
     console.error(`Socket error for ${socket.id}:`, error);
@@ -236,7 +227,6 @@ export function setupErrorHandling(socket: Socket) {
   });
 }
 
-// Room management utilities
 export async function forceCleanRoom(roomId: string): Promise<boolean> {
   try {
     const roomManager = RoomManager.getInstance();
