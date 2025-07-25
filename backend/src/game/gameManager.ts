@@ -36,13 +36,16 @@ class GameManager {
     game.addPlayer(player);
     return game;
   }
-  public removePlayerFromGame(roomId: string, playerId: string): boolean {
+  public async removePlayerFromGame(
+    roomId: string,
+    playerId: string
+  ): Promise<boolean> {
     const game = this.games.get(roomId);
     if (!game) {
       console.error(`Game with roomId ${roomId} does not exist.`);
       return false;
     }
-    const success = game.removePlayer(playerId);
+    const success = await game.removePlayer(playerId);
     if (!success) {
       console.error(`Player with id ${playerId} could not be removed.`);
     }
