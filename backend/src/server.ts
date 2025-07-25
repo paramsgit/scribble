@@ -1,5 +1,5 @@
-import SocketManager from "./src/sockets/socketManager";
-import { handleSocketConnection } from "./src/sockets/handleSocketConnection";
+import SocketManager from "./sockets/socketManager";
+import { handleSocketConnection } from "./sockets/handleSocketConnection";
 const PORT = parseInt(process.env.PORT || "3000", 10);
 
 const socketManager = SocketManager.getInstance();
