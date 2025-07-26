@@ -1,6 +1,6 @@
 import SocketManager from "./sockets/socketManager";
 import { handleSocketConnection } from "./sockets/handleSocketConnection";
-const PORT = parseInt(process.env.PORT || "3000", 10);
+const PORT = parseInt(process.env.PORT || "5000", 10);
 
 const socketManager = SocketManager.getInstance();
 socketManager.onConnection((socket) => {
