@@ -35,7 +35,12 @@ jobs:
             GIT_SSH_COMMAND="ssh -i ../.ssh/deploy-key" git pull origin main
           fi
 
-          # Run docker compose
+          # Run docker compose backend
           cd /home/ubuntu/scribble/backend
+          docker compose down
+          docker compose up -d --build
+
+          # Run docker compose frontend
+          cd /home/ubuntu/scribble/frontend
           docker compose down
           docker compose up -d --build
