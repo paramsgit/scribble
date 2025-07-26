@@ -32,7 +32,7 @@ jobs:
             GIT_SSH_COMMAND="ssh -i ./.ssh/deploy-key" git clone git@github.com:paramsgit/scribble.git
           else
             cd /home/ubuntu/scribble
-            GIT_SSH_COMMAND="ssh -i ./.ssh/deploy-key" git pull origin main
+            GIT_SSH_COMMAND="ssh -i ../.ssh/deploy-key" git pull origin main
           fi
 
           # Run docker compose
