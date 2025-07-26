@@ -26,11 +26,6 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key_path: ec2_key.pem
         script: |
-          # Create deploy key on EC2 for private repo access
-          echo "${{ secrets.DEPLOY_KEY }}" | base64 -d > ~/.ssh/deploy-key
-          chmod 600 ~/.ssh/deploy-key
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/deploy-key
 
           # Clone repo if not exists, otherwise pull
           if [ ! -d "/home/ubuntu/scribble/.git" ]; then
