@@ -34,7 +34,7 @@ jobs:
 
           # Clone repo if not exists, otherwise pull
           if [ ! -d "/home/ubuntu/scribble/.git" ]; then
-            git clone git@github.com:paramsgit/scribble.git /home/ubuntu/scribble
+            GIT_SSH_COMMAND="ssh -i ./.ssh/deploy-key" git clone git@github.com:paramsgit/scribble.git
           else
             cd /home/ubuntu/scribble
             git pull origin main
