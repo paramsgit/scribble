@@ -36,6 +36,6 @@ jobs:
           fi
 
           # Run docker compose
-          cd /home/ubuntu/scribble
+          cd /home/ubuntu/scribble/backend
           docker compose down
           docker compose up -d --build
