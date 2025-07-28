@@ -12,6 +12,7 @@ services:
     volumes:
       - .:/app
     command: npm start
+    container_name: backend
 
   redis:
     image: redis:6.2
