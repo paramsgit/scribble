@@ -5,7 +5,7 @@ class SocketManager {
 
   static getInstance(): Socket {
     if (!SocketManager.instance) {
-      SocketManager.instance = io("http://localhost:5000");
+      SocketManager.instance = io("http://backend:5000");
     }
     return SocketManager.instance;
   }
