@@ -79,7 +79,9 @@ export class CommandManager {
   }
 
   private generateCommandId(): string {
-    return crypto.randomUUID(); // if supported
+    return typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : (Date.now() + Math.random()).toString(36);
     // Or fallback: return (Date.now() + Math.random()).toString(36);
   }
 }
