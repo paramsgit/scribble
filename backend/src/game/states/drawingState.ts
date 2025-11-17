@@ -10,7 +10,7 @@ class DrawingState extends GameState {
 
   onEnter(game: Game): void {
     game.currentWordIndex++;
-    if (game.currentWordIndex >= 1) {
+    if (game.currentWordIndex >= 10) {
       console.log(`[Game:${game.roomId}] Game finished.`);
       game.setState(new FinishedState());
       return;
