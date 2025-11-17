@@ -7,7 +7,10 @@ import config from "../../../config";
 
 class WaitingState extends GameState {
   onEnter(game: Game): void {
-    console.log(`[Game:${game.roomId}] Waiting for players...`);
+    console.log(
+      `[Game:${game.roomId}] Waiting for players...`,
+      game.getState()
+    );
 
     if (game.players?.length >= 2) {
       SocketManager.getInstance().emitToRoom(game.roomId, "wait-update", {
@@ -18,8 +21,6 @@ class WaitingState extends GameState {
       setTimeout(() => {
         game.setState(new DrawingState());
       }, config.waitTime * 1000);
-    } else {
-      SocketManager.getInstance().emitToRoom(game.roomId, "wait-update", {});
     }
   }
 

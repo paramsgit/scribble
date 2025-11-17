@@ -9,7 +9,7 @@ const GroundContainer = ({ turnInfo }: { turnInfo: TurnInfo }) => {
     timerRef.current?.stopTimer();
   };
   return (
-    <div className=" h-[95%]">
+    <div className=" h-[95%] rounded-lg">
       <GameHeader
         wordLength={turnInfo.word_length}
         word={turnInfo.word}

@@ -13,6 +13,7 @@ interface WaitCardProps {
   previousWord: string | null | undefined;
   scores: Scores[] | null | undefined;
   drawer?: string;
+  message?: string;
 }
 
 export default function WaitCard({
@@ -20,6 +21,7 @@ export default function WaitCard({
   previousWord = null,
   scores = null,
   drawer = "",
+  message,
 }: WaitCardProps) {
   const [timeLeft, setTimeLeft] = React.useState(waitTime);
 
@@ -39,6 +41,10 @@ export default function WaitCard({
         <h2 className="text-2xl font-extrabold text-center mb-2 text-gray-600 animate-pulse">
           Waiting {timeLeft ? <span>{timeLeft}s </span> : ""}
         </h2>
+        <p className="text-center">{message}</p>
+      {message==="Game finished" && <div className="flex w-full justify-center gap-2">
+        </div>}
+     
         {previousWord && (
           <div className="mb-4 w-full flex justify-center">
             <p className="text-lg text-gray-600">
@@ -49,6 +55,7 @@ export default function WaitCard({
             </p>
           </div>
         )}
+
         {scores && (
           <div>
             <h3 className="text-lg font-bold mb-2 text-gray-700">

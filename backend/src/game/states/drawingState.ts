@@ -4,13 +4,15 @@ import Game from "../game";
 import GameState from "./gameState";
 import config from "../../../config";
 import WaitingState from "./waitingState";
+import FinishedState from "./finishedState";
 class DrawingState extends GameState {
   private timeLimit = config.gameTime * 1000;
 
   onEnter(game: Game): void {
     game.currentWordIndex++;
-    if (game.currentWordIndex >= 12) {
+    if (game.currentWordIndex >= 10) {
       console.log(`[Game:${game.roomId}] Game finished.`);
+      game.setState(new FinishedState());
       return;
     }
 
@@ -97,7 +99,7 @@ class DrawingState extends GameState {
 
   private pickDrawer(game: Game): string {
     const index = game.currentWordIndex % game.players.length;
-    return game.players[index].id;
+    return game.players[index]?.id;
   }
 }
 

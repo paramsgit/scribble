@@ -28,6 +28,7 @@ export interface UpdatedScores {
 interface WaitModalData {
   waitTime?: number;
   previousWord?: string;
+  message?: string;
   scores?: UpdatedScores[];
 }
 
@@ -110,12 +111,22 @@ const DrawingBoard = ({ drawer, stopTimer }: DrawingBoardProps) => {
           waitTime: data.waitTime,
           previousWord: data.previousWord,
           scores: newScores,
+          message: data?.message,
         });
         updateScores(data.players);
       }
     };
 
+    const finishedUpdateHandler = (data) => {
+      setWaitModalData((prev) => ({
+        ...prev,
+        previousWord: undefined,
+        message: "Game finished",
+      }));
+    };
+
     socket.on("wait-update", waitUpdateHandler);
+    socket.on("game-finished", finishedUpdateHandler);
     socket.on("draw-command", newDrawHandler);
     return () => {
       socket.off("message", newDrawHandler);
@@ -132,6 +143,7 @@ const DrawingBoard = ({ drawer, stopTimer }: DrawingBoardProps) => {
     clearCanvas();
     setWaitModalData(null);
   }, [drawer]);
+  console.log(roomData);
 
   function calculateScoreDifferences(currentData, newData) {
     const map1 = new Map();
@@ -256,15 +268,32 @@ const DrawingBoard = ({ drawer, stopTimer }: DrawingBoardProps) => {
     }
   };
 
+  console.log(drawer);
+
   return (
     <div className="flex flex-col h-full w-full relative pb-2">
-      {waitModalData && (
+      {waitModalData ? (
         <WaitCard
           waitTime={waitModalData.waitTime}
           previousWord={waitModalData.previousWord}
           scores={waitModalData.scores}
           drawer={drawer}
+          message={waitModalData?.message}
         />
+      ) : (
+        (roomData?.players?.length ?? 0) <= 2 &&
+        (!drawer || drawer === "") && (
+          <WaitCard
+            waitTime={undefined}
+            previousWord={null}
+            scores={null}
+            message={
+              (roomData?.players?.length ?? 0) <= 1
+                ? "Waiting for other players to join"
+                : "Game starting shortly"
+            }
+          />
+        )
       )}
       <canvas
         ref={canvasRef}
@@ -316,7 +345,7 @@ const DrawingBoard = ({ drawer, stopTimer }: DrawingBoardProps) => {
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-center p-2 bg-gray-200 text-black ">
+        <div className="flex items-center justify-center p-2 bg-gray-200 text-black rounded-b-lg">
           <h1 className="h-9">Skribble</h1>
         </div>
       )}

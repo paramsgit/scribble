@@ -13,7 +13,7 @@ interface PlayersSectionProps {
 const Players: React.FC<PlayersSectionProps> = ({ data, drawer }) => {
   const socket = SocketManager.getInstance();
   return (
-    <div className="bg-white p-2 overflow-hidden h-full">
+    <div className="bg-white p-2 overflow-hidden h-full rounded-lg">
       <div className="overflow-y-auto h-full flex flex-col ">
         {data?.map((item, index) => {
           return (

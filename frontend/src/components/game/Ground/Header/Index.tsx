@@ -57,7 +57,7 @@ const GameHeader = ({
   }));
 
   return (
-    <div className="w-full bg-gray-100 text-black py-2 px-4 flex items-center justify-between relative">
+    <div className="w-full bg-gray-100 rounded-t-lg text-black py-2 px-4 flex items-center justify-between relative">
       <div className="flex items-center space-x-3">
         <span className="text-lg hidden sm:inline">
           <TimerLogo className={"w-8 text-gray-100!"} />

@@ -50,7 +50,7 @@ const ChatContainer = ({ players }) => {
     });
   };
   return (
-    <div className="bg-white h-full">
+    <div className="bg-white h-full rounded-lg">
       <ChatComponent socket={socket} messages={messages} />
     </div>
   );
