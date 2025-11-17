@@ -5,6 +5,7 @@ import GameManager from "../game/gameManager";
 import DrawingState from "../game/states/drawingState";
 import Game from "../game/game";
 import config from "../../config";
+import WaitingState from "../game/states/waitingState";
 
 export function handleSocketConnection(io: Server, socket: Socket) {
   const roomManager = RoomManager.getInstance();
@@ -89,7 +90,6 @@ export function handleSocketConnection(io: Server, socket: Socket) {
 
   socket.on("request-game-details", async ({ roomId }: { roomId: string }) => {
     try {
-      console.log("get game: ", socket.id);
       // TODO: Create diff fxn for it
       const game = GameManager.getInstance().getGame(roomId);
       if (!game) {
@@ -99,7 +99,6 @@ export function handleSocketConnection(io: Server, socket: Socket) {
       const currentTime = new Date();
       const diffInMs = currentTime.getTime() - oldTime.getTime();
       const diffInSeconds = config.gameTime - Math.floor(diffInMs / 1000);
-
       SocketManager.getInstance().emitToPlayer(socket.id, "game-details", {
         word_length: game.currentWord?.word?.length,
         drawer: game.drawerId,
@@ -153,10 +152,8 @@ async function addPlayerToGame(
 ): Promise<Game> {
   try {
     const game = GameManager.getInstance().addPlayerToGame(roomId, player);
-    console.log("added player to game");
 
     if (players.length >= 2) {
-      console.log(game.getState() instanceof DrawingState);
       if (!(game.getState() instanceof DrawingState)) {
         setTimeout(async () => {
           try {
@@ -167,6 +164,8 @@ async function addPlayerToGame(
         }, 5000);
         SocketManager.getInstance().emitToRoom(roomId, "game-start", game);
       }
+    } else {
+      await game.setState(new WaitingState());
     }
     return game;
   } catch (error) {

@@ -42,7 +42,7 @@ const GameLayout: React.FC<GameLayoutProps> = ({
         </div>
 
         {/* Messages */}
-        <div className={cn(" w-full h-full", messagesClassName)}>
+        <div className={cn(" w-full h-full ", messagesClassName)}>
           {messagesContent}
         </div>
       </div>
