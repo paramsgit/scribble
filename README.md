@@ -10,21 +10,21 @@ A full-stack real-time multiplayer drawing and guessing game built with React, N
 - **Scoring System**: Dynamic scoring based on how quickly players guess correctly
 - **Room Management**: Automatic room creation and player matching
 - **Game States**: State machine pattern with Waiting, Drawing, and Finished states
-- **AI Drawing Recognition**: Integration with Google Gemini AI to analyze drawings
 - **Persistent State**: Redis-based game state persistence with automatic TTL management
 - **Responsive UI**: Modern, responsive design built with React and Tailwind CSS
 
 ## 🛠️ Tech Stack
 
 ### Backend
+
 - **Node.js** with **Express** - RESTful API server
 - **TypeScript** - Type-safe development
 - **Socket.IO** - Real-time bidirectional communication
 - **Redis** (ioredis) - State persistence and room management
-- **Google Gemini AI** - Drawing recognition and analysis
 - **Docker** - Containerization
 
 ### Frontend
+
 - **React 19** - UI framework
 - **TypeScript** - Type-safe development
 - **Vite** - Build tool and dev server
@@ -95,12 +95,14 @@ scribble/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd scribble
    ```
 
 2. **Install backend dependencies**
+
    ```bash
    cd backend
    npm install
@@ -117,6 +119,7 @@ scribble/
 1. **Backend Environment Variables**
 
    Create a `.env` file in the `backend/` directory:
+
    ```env
    PORT=5000
    NODE_ENV=development
@@ -127,6 +130,7 @@ scribble/
 2. **Frontend Configuration**
 
    Update the socket connection URL in `frontend/src/utils/socket.ts` if needed:
+
    ```typescript
    SocketManager.instance = io("http://localhost:5000/");
    ```
@@ -136,12 +140,14 @@ scribble/
 #### Option 1: Run with Docker Compose (Recommended)
 
 **Backend:**
+
 ```bash
 cd backend
 docker-compose up
 ```
 
 **Frontend:**
+
 ```bash
 cd frontend
 docker-compose up
@@ -150,22 +156,27 @@ docker-compose up
 #### Option 2: Run Manually
 
 1. **Start Redis** (if not using Docker)
+
    ```bash
    redis-server
    ```
 
 2. **Start Backend Server**
+
    ```bash
    cd backend
    npm run dev
    ```
+
    Server will run on `http://localhost:5000`
 
 3. **Start Frontend Development Server**
+
    ```bash
    cd frontend
    npm run dev
    ```
+
    Frontend will run on `http://localhost:5173`
 
 4. **Open your browser**
@@ -174,6 +185,7 @@ docker-compose up
 ### Building for Production
 
 **Backend:**
+
 ```bash
 cd backend
 npm run build
@@ -181,6 +193,7 @@ npm start
 ```
 
 **Frontend:**
+
 ```bash
 cd frontend
 npm run build
@@ -219,6 +232,7 @@ The game uses a state machine pattern with three main states:
 ### Data Persistence
 
 - **Redis** stores:
+
   - Game state (serialized game objects)
   - Room player lists
   - Player-to-room mappings
@@ -237,6 +251,7 @@ The game uses a state machine pattern with three main states:
 ### Game Settings
 
 Edit `backend/config/index.ts`:
+
 ```typescript
 gameTime: 20,    // Drawing time per round (seconds)
 waitTime: 10,    // Wait time between rounds (seconds)
@@ -245,8 +260,9 @@ waitTime: 10,    // Wait time between rounds (seconds)
 ### CORS Settings
 
 Configure allowed origins in `backend/config/index.ts`:
+
 ```typescript
-corsOrigin: process.env.CORS_ORIGIN || "*"
+corsOrigin: process.env.CORS_ORIGIN || "*";
 ```
 
 ## 📡 API Endpoints
@@ -267,12 +283,14 @@ See the "Real-Time Communication" section above for event details.
 ### Scripts
 
 **Backend:**
+
 - `npm run dev` - Start development server with nodemon
 - `npm run build` - Compile TypeScript
 - `npm run watch` - Watch mode for TypeScript compilation
 - `npm start` - Start production server
 
 **Frontend:**
+
 - `npm run dev` - Start Vite dev server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
@@ -288,6 +306,7 @@ docker-compose up -d
 ```
 
 Includes:
+
 - Node.js application container
 - Redis container
 - Automatic dependency management
@@ -300,6 +319,7 @@ docker-compose up -d
 ```
 
 Includes:
+
 - Multi-stage build (Node.js build + Nginx serve)
 - Nginx configuration for static file serving
 - Production-optimized build
@@ -335,6 +355,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 For questions or support, please open an issue on the repository.
 
 ---
-
-**Built with ❤️ using React, Node.js, Socket.IO, and Redis**
-
